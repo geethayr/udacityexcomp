@@ -1,6 +1,7 @@
 import React, { Component } from "react";
-import "./App.css";
-import logo from "./logo.svg";
+import logo from "../logo.svg";
+import "../App.css";
+import Dashboard from "./Dashboard";
 
 const profiles = [
     {
@@ -38,12 +39,12 @@ const profiles = [
 const users = {
     1: {
         id: 1,
-        name: "Jane Cruz",
+        name: "Jane Jones",
         userName: "coder"
     },
     2: {
         id: 2,
-        name: "Matthew Johnson",
+        name: "Matthew Page",
         userName: "mpage"
     },
     3: {
@@ -58,7 +59,7 @@ const users = {
     },
     5: {
         id: 5,
-        name: "Lauren Carlson",
+        name: "Lauren Johnson",
         userName: "user123"
     },
     6: {
@@ -71,7 +72,7 @@ const users = {
 const movies = {
     1: {
         id: 1,
-        name: "Planet Earth"
+        name: "Planet Earth 1"
     },
     2: {
         id: 2,
@@ -92,48 +93,46 @@ const movies = {
 };
 
 class App extends Component {
+    /*
+    The constructor is a "special method for creating and initializing an object."
+    (https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Classes). The
+    Component's constructor is the first thing that runs when the object is created.
+    */
+    constructor(props) {
+        super(props);
+        this.usersByMovie = {};
+
+        /*
+        We can map the users by the movie they liked.
+        */
+        profiles.forEach(profile => {
+            const movieID = profile.favoriteMovieID;
+
+            if (this.usersByMovie[movieID]) {
+                this.usersByMovie[movieID].push(profile.userID);
+            } else {
+                this.usersByMovie[movieID] = [profile.userID];
+            }
+        });
+    }
+
+    /*
+    The render method gets called automatically every time the value of the
+    component's props changes.
+    */
     render() {
-        /*Return JSX*/
         return (
-            /*
-            Without this '(', JS will automatically put a ';' after the `return`
-            keyword.
-            */
             <div>
                 <header className="App-header">
                     <img src={logo} className="App-logo" alt="logo" />
                     <h1 className="App-title">ReactND - Coding Practice</h1>
                 </header>
-                <ul>
-                    <h2>Favorite Movies</h2>
-
-                    {/*
-          For each object in the profiles array, make a list of JSX elements.
-          The map function returns a new array, which will
-          only have list elements in it. React will automatically know how to
-          render an array of JSX objects.
-          */}
-                    {profiles.map(profile => {
-                        const userName = users[profile.userID].name;
-                        const favMovieName = movies[profile.favoriteMovieID].name;
-
-                        return (
-                            /*
-                            You need to include the `key` property every time you create list
-                            elements in React. The key property is necessary because it enables
-                            React to perform reconciliation
-                            (https://reactjs.org/docs/reconciliation.html)
-                            */
-                            <li key={profile.id}>
-                                {/* If the syntax below looks unfamiliar, please take the following
-              course:
-              https://www.udacity.com/course/es6-javascript-improved--ud356
-                */}
-                                <p>{`${userName}\'s favorite movie is "${favMovieName}."`}</p>
-                            </li>
-                        );
-                    })}
-                </ul>
+                <h2>How Popular is Your Favorite Movie?</h2>
+                <Dashboard
+                    usersByMovie={this.usersByMovie}
+                    movies={movies}
+                    users={users}
+                />
             </div>
         );
     }
